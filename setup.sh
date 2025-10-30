@@ -228,6 +228,10 @@ fi
 # Instalar dependências com múltiplas estratégias
 echo "📦 Instalando dependências React..."
 
+# Instalar CRACO primeiro para resolver problemas de configuração
+echo "🔧 Instalando CRACO para resolver problemas de dev server..."
+npm install @craco/craco --save-dev 2>/dev/null || echo "⚠️  CRACO pode ser instalado depois"
+
 if npm install 2>/dev/null; then
     echo "✅ npm install bem-sucedido"
 elif npm install --legacy-peer-deps 2>/dev/null; then
@@ -239,7 +243,7 @@ else
     echo "💡 Tentando instalar dependências essenciais individualmente..."
     
     # Instalar dependências essenciais uma por uma
-    essential_npm_deps="react react-dom react-scripts react-router-dom"
+    essential_npm_deps="react react-dom react-scripts react-router-dom @craco/craco"
     for dep in $essential_npm_deps; do
         echo "Instalando $dep..."
         npm install "$dep" 2>/dev/null && echo "✅ $dep" || echo "⚠️  $dep falhou"

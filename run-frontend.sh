@@ -31,6 +31,25 @@ echo
 # Definir variáveis de ambiente para desenvolvimento
 export REACT_APP_API_URL=http://localhost:8000
 export REACT_APP_WS_URL=ws://localhost:8000
+export DANGEROUSLY_DISABLE_HOST_CHECK=true
+export WDS_SOCKET_HOST=localhost
+export WDS_SOCKET_PORT=3000
+export SKIP_PREFLIGHT_CHECK=true
 
-# Executar o servidor de desenvolvimento
-npm start
+echo "🔧 Tentando múltiplos métodos de inicialização..."
+
+# Método 1: CRACO (preferido)
+echo "📦 Método 1: Usando CRACO..."
+if npm run start 2>/dev/null; then
+    echo "✅ Frontend iniciado com CRACO"
+elif npm run start:legacy 2>/dev/null; then
+    echo "✅ Frontend iniciado com método legacy"
+else
+    echo "⚠️  CRACO falhou, tentando react-scripts direto..."
+    
+    # Método 2: React Scripts com variáveis de ambiente
+    DANGEROUSLY_DISABLE_HOST_CHECK=true \
+    WDS_SOCKET_HOST=localhost \
+    WDS_SOCKET_PORT=3000 \
+    npm run start:safe
+fi
