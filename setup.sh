@@ -46,15 +46,58 @@ echo "✅ Python $(python3 --version) e Node.js $(node --version) encontrados"
 echo
 echo "📦 Criando ambiente virtual Python..."
 if [ ! -d "venv" ]; then
+    echo "Criando novo ambiente virtual..."
     python3 -m venv venv
+    
+    # Verificar se foi criado com sucesso
+    if [ ! -d "venv" ] || [ ! -f "venv/bin/activate" ]; then
+        echo "❌ Falha ao criar ambiente virtual. Tentando com virtualenv..."
+        
+        # Tentar com virtualenv se venv falhou
+        if command -v virtualenv &> /dev/null; then
+            virtualenv venv
+        else
+            echo "❌ virtualenv não encontrado. Instalando..."
+            pip3 install virtualenv
+            virtualenv venv
+        fi
+        
+        # Verificar novamente
+        if [ ! -f "venv/bin/activate" ]; then
+            echo "❌ Não foi possível criar ambiente virtual."
+            echo "💡 Tente instalar manualmente: pip3 install virtualenv"
+            exit 1
+        fi
+    fi
     echo "✅ Ambiente virtual criado"
 else
     echo "✅ Ambiente virtual já existe"
 fi
 
+# Verificar se o arquivo activate existe antes de tentar usar
+if [ ! -f "venv/bin/activate" ]; then
+    echo "❌ Arquivo venv/bin/activate não encontrado!"
+    echo "💡 Removendo venv corrompido e criando novamente..."
+    rm -rf venv
+    python3 -m venv venv
+    
+    if [ ! -f "venv/bin/activate" ]; then
+        echo "❌ Falha crítica ao criar ambiente virtual"
+        exit 1
+    fi
+fi
+
 # Ativar ambiente virtual
 echo "🔧 Ativando ambiente virtual..."
 source venv/bin/activate
+
+# Verificar se a ativação funcionou
+if [ -z "$VIRTUAL_ENV" ]; then
+    echo "❌ Falha ao ativar ambiente virtual"
+    exit 1
+fi
+
+echo "✅ Ambiente virtual ativado: $VIRTUAL_ENV"
 
 # Atualizar pip
 echo "📦 Atualizando pip..."
@@ -62,7 +105,26 @@ pip install --upgrade pip
 
 # Instalar dependências Python
 echo "📦 Instalando dependências Python..."
-pip install -r requirements.txt
+
+# Tentar instalar com requirements.txt principal
+if pip install -r requirements.txt; then
+    echo "✅ Dependências principais instaladas"
+else
+    echo "⚠️  Falha com requirements.txt principal. Tentando versão simplificada..."
+    
+    # Se falhar, tentar com requirements-simple.txt
+    if [ -f "requirements-simple.txt" ]; then
+        if pip install -r requirements-simple.txt; then
+            echo "✅ Dependências simplificadas instaladas"
+        else
+            echo "❌ Falha ao instalar dependências básicas"
+            exit 1
+        fi
+    else
+        echo "❌ Arquivo requirements-simple.txt não encontrado"
+        exit 1
+    fi
+fi
 
 echo "✅ Dependências Python instaladas no ambiente virtual"
 
