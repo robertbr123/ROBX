@@ -46,24 +46,71 @@ ROBX/
 
 ## 🚀 Instalação
 
-### 1. Clone o repositório
+### Opção 1: Instalação Automática (Linux)
+
+#### 1. Clone o repositório
 ```bash
 git clone https://github.com/robertbr123/ROBX.git
 cd ROBX
 ```
 
-### 2. Backend Setup
+#### 2. Instale dependências do sistema (apenas primeira vez)
 ```bash
-cd backend
-pip install -r ../requirements.txt
-python main.py
+chmod +x *.sh
+sudo ./install-linux-deps.sh
 ```
 
-### 3. Frontend Setup
+#### 3. Configure o projeto
+```bash
+./setup.sh
+```
+
+#### 4. Execute o sistema
+```bash
+./run-all.sh  # Inicia backend e frontend juntos
+# OU
+./run-backend.sh  # Apenas backend
+./run-frontend.sh  # Apenas frontend (em outro terminal)
+```
+
+### Opção 2: Instalação Manual
+
+#### 1. Dependências do Sistema
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install python3 python3-pip python3-venv nodejs npm build-essential
+
+# CentOS/RHEL/Fedora
+sudo yum install python3 python3-pip nodejs npm gcc gcc-c++ make
+# ou para versões mais novas: sudo dnf install python3 python3-pip nodejs npm gcc gcc-c++ make
+
+# Arch Linux
+sudo pacman -S python python-pip nodejs npm base-devel
+```
+
+#### 2. Backend Setup
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cd backend
+python3 main.py
+```
+
+#### 3. Frontend Setup (novo terminal)
 ```bash
 cd frontend
 npm install
 npm start
+```
+
+### Opção 3: Windows
+```bash
+# Execute os arquivos .bat
+setup.bat
+run-backend.bat  # Terminal 1
+run-frontend.bat  # Terminal 2
 ```
 
 ## 📊 Indicadores Técnicos

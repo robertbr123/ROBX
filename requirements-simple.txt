@@ -1,0 +1,30 @@
+# Backend Dependencies - Core
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+pydantic==2.5.0
+
+# Data Analysis & Trading - Essential
+pandas==2.1.4
+numpy==1.25.2
+yfinance==0.2.22
+
+# Technical Analysis - Will fallback to manual implementation if TA-Lib fails
+# ta-lib==0.4.28  # Commented out as it can cause installation issues
+pandas-ta==0.3.14b0
+scikit-learn==1.3.2
+scipy==1.11.4
+
+# API & HTTP
+requests==2.31.0
+aiohttp==3.9.1
+httpx==0.25.2
+
+# Configuration & Environment
+python-dotenv==1.0.0
+
+# Logging
+loguru==0.7.2
+
+# Development
+black==23.11.0
