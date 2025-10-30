@@ -40,18 +40,25 @@ export WDS_SOCKET_HOST=localhost
 export WDS_SOCKET_PORT=3000
 export SKIP_PREFLIGHT_CHECK=true
 
+# Suprimir warnings de depreciação do Node.js/Webpack
+export NODE_OPTIONS="--no-deprecation"
+export NODE_NO_WARNINGS=1
+export GENERATE_SOURCEMAP=false
+
 echo "🔧 Tentando múltiplos métodos de inicialização..."
 
 # Método 1: CRACO (preferido)
-echo "📦 Método 1: Usando CRACO..."
-if npm run start 2>/dev/null; then
+echo "📦 Método 1: Usando CRACO sem warnings..."
+if NODE_OPTIONS="--no-deprecation" NODE_NO_WARNINGS=1 npm run start 2>/dev/null; then
     echo "✅ Frontend iniciado com CRACO"
-elif npm run start:legacy 2>/dev/null; then
+elif NODE_OPTIONS="--no-deprecation" NODE_NO_WARNINGS=1 npm run start:legacy 2>/dev/null; then
     echo "✅ Frontend iniciado com método legacy"
 else
     echo "⚠️  CRACO falhou, tentando react-scripts direto..."
     
     # Método 2: React Scripts com variáveis de ambiente
+    NODE_OPTIONS="--no-deprecation" \
+    NODE_NO_WARNINGS=1 \
     DANGEROUSLY_DISABLE_HOST_CHECK=true \
     WDS_SOCKET_HOST=localhost \
     WDS_SOCKET_PORT=3000 \

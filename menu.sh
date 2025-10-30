@@ -42,11 +42,12 @@ while true; do
     echo "2) 🔧 Iniciar Backend (./run-backend.sh)"
     echo "3) 🎨 Iniciar Frontend (./run-frontend.sh)"
     echo "4) 🎨 Iniciar Frontend com Progresso (./run-frontend-with-progress.sh)"
-    echo "5) 🚀 Iniciar Ambos - Completo (./run-all.sh)"
-    echo "6) ⚡ Iniciar Ambos - Rápido (./quick-start.sh)"
-    echo "7) 🛑 Parar Todos os Serviços (./stop-all.sh)"
-    echo "8) 🔍 Diagnóstico (./troubleshoot.sh)"
-    echo "9) 🎨 Corrigir Frontend (./fix-frontend.sh)"
+    echo "5) 🎨 Iniciar Frontend Sem Warnings (./run-frontend-clean.sh)"
+    echo "6) 🚀 Iniciar Ambos - Completo (./run-all.sh)"
+    echo "7) ⚡ Iniciar Ambos - Rápido (./quick-start.sh)"
+    echo "8) 🛑 Parar Todos os Serviços (./stop-all.sh)"
+    echo "9) 🔍 Diagnóstico (./troubleshoot.sh)"
+    echo "c) 🎨 Corrigir Frontend (./fix-frontend.sh)"
     echo "s) 📊 Mostrar Status"
     echo "m) 📈 Monitorar Frontend"
     echo "d) 📚 Abrir Documentação da API"
@@ -54,7 +55,7 @@ while true; do
     echo "0) ❌ Sair"
     echo
     
-    read -p "Digite sua escolha (0-9, s, m, d, f): " choice
+    read -p "Digite sua escolha (0-9, c, s, m, d, f): " choice
     
     case $choice in
         1)
@@ -74,22 +75,26 @@ while true; do
             ./run-frontend-with-progress.sh
             ;;
         5)
+            echo "🎨 Iniciando frontend sem warnings..."
+            ./run-frontend-clean.sh
+            ;;
+        6)
             echo "🚀 Iniciando sistema completo..."
             ./run-all.sh
             ;;
-        6)
+        7)
             echo "⚡ Início rápido..."
             ./quick-start.sh
             ;;
-        7)
+        8)
             echo "🛑 Parando serviços..."
             ./stop-all.sh
             ;;
-        8)
+        9)
             echo "🔍 Executando diagnóstico..."
             ./troubleshoot.sh
             ;;
-        9)
+        c|C)
             echo "🎨 Corrigindo frontend..."
             ./fix-frontend.sh
             ;;
@@ -120,7 +125,7 @@ while true; do
             exit 0
             ;;
         *)
-            echo "❌ Opção inválida. Use: 0-9, s (status), m (monitor), d (docs), f (diagnóstico frontend)"
+            echo "❌ Opção inválida. Use: 0-9, c (corrigir), s (status), m (monitor), d (docs), f (diagnóstico)"
             ;;
     esac
     
