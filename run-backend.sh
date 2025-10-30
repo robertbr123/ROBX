@@ -41,12 +41,19 @@ echo
 # Tentar diferentes métodos de execução
 cd backend
 
+echo "🔧 Testando imports primeiro..."
+if python3 test_imports.py; then
+    echo "✅ Imports OK, iniciando servidor..."
+else
+    echo "⚠️  Alguns imports com problemas, mas tentando mesmo assim..."
+fi
+
 echo "🔧 Tentando método 1: start.py..."
 if python3 start.py; then
     echo "✅ Servidor executado com sucesso"
 else
-    echo "⚠️  Método 1 falhou, tentando método 2: run.py..."
-    if python3 run.py; then
+    echo "⚠️  Método 1 falhou, tentando método 2: debug.py..."
+    if python3 debug.py; then
         echo "✅ Servidor executado com sucesso"
     else
         echo "⚠️  Método 2 falhou, tentando método 3: main.py direto..."
@@ -56,9 +63,14 @@ import os
 sys.path.insert(0, '.')
 sys.path.insert(0, '..')
 os.environ['PYTHONPATH'] = '.:..:'
-from main import app
-import uvicorn
-uvicorn.run(app, host='0.0.0.0', port=8000)
+try:
+    from main import app
+    import uvicorn
+    print('✅ Imports funcionando, iniciando servidor...')
+    uvicorn.run(app, host='0.0.0.0', port=8000)
+except Exception as e:
+    print(f'❌ Erro: {e}')
+    print('💡 Execute ./troubleshoot.sh para diagnóstico')
 "
     fi
 fi

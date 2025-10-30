@@ -57,10 +57,10 @@ market_service = MarketDataService()
 analysis_service = TechnicalAnalysisService()
 websocket_manager = WebSocketManager()
 
-# Include routers
-app.include_router(market_data.router, prefix="/api/v1/market", tags=["Market Data"])
-app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["Technical Analysis"])
-app.include_router(recommendations.router, prefix="/api/v1/recommendations", tags=["Trading Signals"])
+# Include routers (market_data, analysis, recommendations já são os routers)
+app.include_router(market_data, prefix="/api/v1/market", tags=["Market Data"])
+app.include_router(analysis, prefix="/api/v1/analysis", tags=["Technical Analysis"])
+app.include_router(recommendations, prefix="/api/v1/recommendations", tags=["Trading Signals"])
 
 @app.get("/")
 async def root():
