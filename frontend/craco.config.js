@@ -10,32 +10,42 @@ module.exports = {
       if (env === 'development') {
         // Fix para o erro de allowedHosts e deprecation warnings
         if (webpackConfig.devServer) {
-          webpackConfig.devServer = {
+          const devServerConfig = {
             ...webpackConfig.devServer,
             allowedHosts: 'all',
             host: '0.0.0.0',
             port: 3000,
             client: {
-              webSocketURL: 'auto://0.0.0.0:0/ws'
+              webSocketURL: 'auto://0.0.0.0:0/ws',
+              overlay: {
+                errors: true,
+                warnings: false,
+              },
             },
             headers: {
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
               'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
             },
-            // Nova sintaxe para middleware (resolve deprecation warning)
-            setupMiddlewares: (middlewares, devServer) => {
+            compress: true,
+            historyApiFallback: true,
+            hot: true,
+          };
+
+          // Adicionar setupMiddlewares se webpack dev server suportar
+          try {
+            devServerConfig.setupMiddlewares = (middlewares, devServer) => {
               if (!devServer) {
                 throw new Error('webpack-dev-server is not defined');
               }
-              
-              // Middleware customizado pode ser adicionado aqui
               return middlewares;
-            },
-            // Remover configurações depreciadas
-            onBeforeSetupMiddleware: undefined,
-            onAfterSetupMiddleware: undefined,
-          };
+            };
+          } catch (error) {
+            // Fallback para versões antigas
+            console.log('Using legacy middleware configuration');
+          }
+
+          webpackConfig.devServer = devServerConfig;
         }
       }
       
@@ -43,8 +53,8 @@ module.exports = {
     },
   },
   devServer: (devServerConfig, { env, paths, proxy, allowedHost }) => {
-    // Configuração moderna do dev server
-    return {
+    // Configuração robusta do dev server
+    const config = {
       ...devServerConfig,
       allowedHosts: 'all',
       host: '0.0.0.0',
@@ -61,27 +71,35 @@ module.exports = {
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
         'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
       },
-      // Nova sintaxe recomendada
-      setupMiddlewares: (middlewares, devServer) => {
+      compress: true,
+      historyApiFallback: true,
+      hot: true,
+      liveReload: false,
+    };
+
+    // Adicionar setupMiddlewares de forma segura
+    try {
+      config.setupMiddlewares = (middlewares, devServer) => {
         if (!devServer) {
           throw new Error('webpack-dev-server is not defined');
         }
         
-        // Log de inicialização
-        devServer.app.get('/api/health', (req, res) => {
-          res.json({ status: 'Frontend dev server running' });
-        });
+        // Health check endpoint
+        if (devServer.app) {
+          devServer.app.get('/api/health', (req, res) => {
+            res.json({ status: 'Frontend dev server running' });
+          });
+        }
         
         return middlewares;
-      },
-      // Configurações adicionais para evitar warnings
-      compress: true,
-      historyApiFallback: true,
-      hot: true,
-      liveReload: false, // Usar apenas hot reload
-    };
+      };
+    } catch (error) {
+      console.log('setupMiddlewares not available, using legacy configuration');
+    }
+
+    return config;
   },
   eslint: {
-    enable: false, // Desabilitar ESLint temporariamente para evitar problemas
+    enable: false, // Desabilitar ESLint para evitar problemas
   },
 };

@@ -45,22 +45,46 @@ export NODE_OPTIONS="--no-deprecation"
 export NODE_NO_WARNINGS=1
 export GENERATE_SOURCEMAP=false
 
+echo "🔧 Verificando configuração do projeto..."
+
+# Verificar se CRACO está instalado
+if [ -f "node_modules/.bin/craco" ] || npm list @craco/craco > /dev/null 2>&1; then
+    echo "✅ CRACO encontrado"
+    USE_CRACO=true
+else
+    echo "⚠️  CRACO não encontrado, usando react-scripts"
+    USE_CRACO=false
+fi
+
 echo "🔧 Tentando múltiplos métodos de inicialização..."
 
-# Método 1: CRACO (preferido)
-echo "📦 Método 1: Usando CRACO sem warnings..."
-if NODE_OPTIONS="--no-deprecation" NODE_NO_WARNINGS=1 npm run start 2>/dev/null; then
-    echo "✅ Frontend iniciado com CRACO"
-elif NODE_OPTIONS="--no-deprecation" NODE_NO_WARNINGS=1 npm run start:legacy 2>/dev/null; then
+# Método 1: CRACO (se disponível)
+if [ "$USE_CRACO" = true ]; then
+    echo "📦 Método 1: Usando CRACO..."
+    if NODE_OPTIONS="--no-deprecation" NODE_NO_WARNINGS=1 timeout 10s npm run start --silent 2>/dev/null; then
+        echo "✅ Frontend iniciado com CRACO"
+        exit 0
+    else
+        echo "⚠️  CRACO falhou ou timeout, tentando react-scripts..."
+    fi
+fi
+
+# Método 2: React Scripts Legacy
+echo "📦 Método 2: React Scripts com configurações legacy..."
+if NODE_OPTIONS="--no-deprecation" NODE_NO_WARNINGS=1 npm run start:legacy --silent 2>/dev/null; then
     echo "✅ Frontend iniciado com método legacy"
+elif NODE_OPTIONS="--no-deprecation" NODE_NO_WARNINGS=1 npm run start:safe --silent 2>/dev/null; then
+    echo "✅ Frontend iniciado com react-scripts seguro"
 else
-    echo "⚠️  CRACO falhou, tentando react-scripts direto..."
+    echo "⚠️  Métodos configurados falharam, tentando react-scripts direto..."
     
-    # Método 2: React Scripts com variáveis de ambiente
+    # Método 3: React Scripts puro com variáveis de ambiente
+    echo "📦 Método 3: React Scripts direto..."
     NODE_OPTIONS="--no-deprecation" \
     NODE_NO_WARNINGS=1 \
     DANGEROUSLY_DISABLE_HOST_CHECK=true \
     WDS_SOCKET_HOST=localhost \
     WDS_SOCKET_PORT=3000 \
-    npm run start:safe
+    SKIP_PREFLIGHT_CHECK=true \
+    npx react-scripts start
 fi
