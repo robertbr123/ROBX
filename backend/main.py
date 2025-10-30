@@ -11,12 +11,27 @@ import asyncio
 import json
 from typing import List
 import os
+import sys
 from dotenv import load_dotenv
 
-from api.routes import market_data, analysis, recommendations
-from services.market_service import MarketDataService
-from services.analysis_service import TechnicalAnalysisService
-from services.websocket_manager import WebSocketManager
+# Add current directory to Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
+
+try:
+    # Try absolute imports
+    from api.routes import market_data, analysis, recommendations
+    from services.market_service import MarketDataService
+    from services.analysis_service import TechnicalAnalysisService
+    from services.websocket_manager import WebSocketManager
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Trying alternative import method...")
+    # Try alternative import method
+    from api import market_data, analysis, recommendations
+    from services.market_service import MarketDataService
+    from services.analysis_service import TechnicalAnalysisService
+    from services.websocket_manager import WebSocketManager
 
 # Load environment variables
 load_dotenv()

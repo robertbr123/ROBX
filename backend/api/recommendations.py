@@ -7,8 +7,17 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 import asyncio
 
-from ..services.analysis_service import TechnicalAnalysisService
-from ..services.market_service import MarketDataService
+try:
+    # Try relative imports first (when run as package)
+    from ..services.analysis_service import TechnicalAnalysisService
+    from ..services.market_service import MarketDataService
+except ImportError:
+    # Fall back to absolute imports (when run directly)
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from services.analysis_service import TechnicalAnalysisService
+    from services.market_service import MarketDataService
 
 router = APIRouter()
 analysis_service = TechnicalAnalysisService()

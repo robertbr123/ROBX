@@ -9,15 +9,13 @@ if [ ! -f "backend/main.py" ]; then
     exit 1
 fi
 
-# Verificar se o ambiente virtual existe
-if [ ! -d "venv" ]; then
-    echo "❌ Ambiente virtual não encontrado. Execute ./setup.sh primeiro."
-    exit 1
+# Ativar ambiente virtual se existir
+if [ -f "venv/bin/activate" ]; then
+    echo "🔧 Ativando ambiente virtual..."
+    source venv/bin/activate
+else
+    echo "⚠️  Ambiente virtual não encontrado, usando Python global"
 fi
-
-# Ativar ambiente virtual
-echo "🔧 Ativando ambiente virtual..."
-source venv/bin/activate
 
 # Verificar se as dependências estão instaladas
 python3 -c "import fastapi" 2>/dev/null
@@ -29,8 +27,8 @@ fi
 echo "✅ Dependências verificadas"
 echo
 
-# Navegar para o diretório backend
-cd backend
+# Definir PYTHONPATH para resolver imports
+export PYTHONPATH="${PWD}/backend:${PWD}:${PYTHONPATH}"
 
 echo "🚀 Iniciando servidor FastAPI na porta 8000..."
 echo "📊 API Docs: http://localhost:8000/docs"
@@ -40,5 +38,27 @@ echo
 echo "Pressione Ctrl+C para parar o servidor"
 echo
 
-# Executar o servidor
-python3 main.py
+# Tentar diferentes métodos de execução
+cd backend
+
+echo "🔧 Tentando método 1: start.py..."
+if python3 start.py; then
+    echo "✅ Servidor executado com sucesso"
+else
+    echo "⚠️  Método 1 falhou, tentando método 2: run.py..."
+    if python3 run.py; then
+        echo "✅ Servidor executado com sucesso"
+    else
+        echo "⚠️  Método 2 falhou, tentando método 3: main.py direto..."
+        python3 -c "
+import sys
+import os
+sys.path.insert(0, '.')
+sys.path.insert(0, '..')
+os.environ['PYTHONPATH'] = '.:..:'
+from main import app
+import uvicorn
+uvicorn.run(app, host='0.0.0.0', port=8000)
+"
+    fi
+fi

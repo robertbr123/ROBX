@@ -6,7 +6,15 @@ Rotas para análise técnica e indicadores
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 
-from ..services.analysis_service import TechnicalAnalysisService
+try:
+    # Try relative import first (when run as package)
+    from ..services.analysis_service import TechnicalAnalysisService
+except ImportError:
+    # Fall back to absolute import (when run directly)
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from services.analysis_service import TechnicalAnalysisService
 
 router = APIRouter()
 analysis_service = TechnicalAnalysisService()
