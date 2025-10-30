@@ -124,12 +124,15 @@ echo -e "${GREEN}✅ Backend iniciado (PID: $BACKEND_PID)${NC}"
 
 # Iniciar Frontend em background
 echo -e "${BLUE}🎨 Iniciando Frontend...${NC}"
+echo "⏳ ATENÇÃO: Frontend pode demorar 2-5 minutos na primeira execução"
+echo "📊 'Starting the development server...' é NORMAL"
 ./run-frontend.sh > frontend.log 2>&1 &
 FRONTEND_PID=$!
 
 # Aguardar alguns segundos para o frontend inicializar
 echo "⏳ Aguardando frontend inicializar..."
-sleep 10
+echo "💡 Para monitorar progresso: tail -f frontend.log (outro terminal)"
+sleep 15
 
 # Verificar se o frontend está rodando
 if ! kill -0 $FRONTEND_PID 2>/dev/null; then
@@ -139,18 +142,21 @@ if ! kill -0 $FRONTEND_PID 2>/dev/null; then
     exit 1
 fi
 
-# Verificar se o frontend responde
-echo "🔍 Testando conexão com frontend..."
-for i in {1..15}; do
-    if curl -s http://localhost:3000 &>/dev/null; then
+# Verificar se o frontend responde (mais tempo para primeira execução)
+echo "🔍 Testando conexão com frontend (pode demorar)..."
+for i in {1..30}; do
+    if curl -s --connect-timeout 2 http://localhost:3000 &>/dev/null; then
         echo -e "${GREEN}✅ Frontend respondendo${NC}"
         break
-    elif [ $i -eq 15 ]; then
+    elif [ $i -eq 30 ]; then
         echo -e "${YELLOW}⚠️  Frontend ainda carregando, mas processo ativo${NC}"
+        echo -e "${BLUE}💡 Continue aguardando ou verifique: tail -f frontend.log${NC}"
         break
     else
-        echo "⏳ Tentativa $i/15..."
-        sleep 3
+        if [ $((i % 5)) -eq 0 ]; then
+            echo "⏳ Ainda carregando... ($i/30) - Primeira execução demora mais"
+        fi
+        sleep 4
     fi
 done
 

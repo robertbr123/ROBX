@@ -41,18 +41,20 @@ while true; do
     echo "1) 🚀 Executar Setup Completo (./setup.sh)"
     echo "2) 🔧 Iniciar Backend (./run-backend.sh)"
     echo "3) 🎨 Iniciar Frontend (./run-frontend.sh)"
-    echo "4) 🚀 Iniciar Ambos - Completo (./run-all.sh)"
-    echo "5) ⚡ Iniciar Ambos - Rápido (./quick-start.sh)"
-    echo "6) 🛑 Parar Todos os Serviços (./stop-all.sh)"
-    echo "7) 🔍 Diagnóstico (./troubleshoot.sh)"
-    echo "8) 🎨 Corrigir Frontend (./fix-frontend.sh)"
-    echo "9) 📊 Mostrar Status"
+    echo "4) 🎨 Iniciar Frontend com Progresso (./run-frontend-with-progress.sh)"
+    echo "5) 🚀 Iniciar Ambos - Completo (./run-all.sh)"
+    echo "6) ⚡ Iniciar Ambos - Rápido (./quick-start.sh)"
+    echo "7) 🛑 Parar Todos os Serviços (./stop-all.sh)"
+    echo "8) 🔍 Diagnóstico (./troubleshoot.sh)"
+    echo "9) 🎨 Corrigir Frontend (./fix-frontend.sh)"
+    echo "s) 📊 Mostrar Status"
+    echo "m) 📈 Monitorar Frontend"
     echo "d) 📚 Abrir Documentação da API"
     echo "f) 🔍 Diagnóstico Frontend"
     echo "0) ❌ Sair"
     echo
     
-    read -p "Digite sua escolha (0-9, d, f): " choice
+    read -p "Digite sua escolha (0-9, s, m, d, f): " choice
     
     case $choice in
         1)
@@ -68,27 +70,35 @@ while true; do
             ./run-frontend.sh
             ;;
         4)
+            echo "🎨 Iniciando frontend com monitor de progresso..."
+            ./run-frontend-with-progress.sh
+            ;;
+        5)
             echo "🚀 Iniciando sistema completo..."
             ./run-all.sh
             ;;
-        5)
+        6)
             echo "⚡ Início rápido..."
             ./quick-start.sh
             ;;
-        6)
+        7)
             echo "🛑 Parando serviços..."
             ./stop-all.sh
             ;;
-        7)
+        8)
             echo "🔍 Executando diagnóstico..."
             ./troubleshoot.sh
             ;;
-        8)
+        9)
             echo "🎨 Corrigindo frontend..."
             ./fix-frontend.sh
             ;;
-        9)
+        s|S)
             show_status
+            ;;
+        m|M)
+            echo "📈 Monitorando frontend..."
+            ./monitor-frontend.sh
             ;;
         d|D)
             echo "📚 Abrindo documentação..."
@@ -110,7 +120,7 @@ while true; do
             exit 0
             ;;
         *)
-            echo "❌ Opção inválida. Digite um número de 0 a 9, ou 'd' para docs, 'f' para diagnóstico frontend."
+            echo "❌ Opção inválida. Use: 0-9, s (status), m (monitor), d (docs), f (diagnóstico frontend)"
             ;;
     esac
     

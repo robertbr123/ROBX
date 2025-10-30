@@ -25,6 +25,10 @@ echo "🚀 Iniciando servidor React na porta 3000..."
 echo "🌐 Interface: http://localhost:3000"
 echo "🔗 Conecta ao backend: http://localhost:8000"
 echo
+echo "⏳ PRIMEIRA EXECUÇÃO PODE DEMORAR 2-5 MINUTOS"
+echo "📊 Status: 'Starting the development server...' é NORMAL"
+echo "💡 Para monitorar: ../monitor-frontend.sh (em outro terminal)"
+echo
 echo "Pressione Ctrl+C para parar o servidor"
 echo
 
