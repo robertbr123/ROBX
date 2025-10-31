@@ -13,6 +13,7 @@ import (
 // Settings holds application configuration.
 type Settings struct {
 	AppName                 string
+	ServerPort              string
 	SecretKey               string
 	AccessTokenExpire       time.Duration
 	DatabaseURL             string
@@ -31,6 +32,7 @@ func Load() Settings {
 
 	settings := Settings{}
 	settings.AppName = getenv("ROBX_APP_NAME", "ROBX Signals API")
+	settings.ServerPort = getenv("ROBX_SERVER_PORT", "8000")
 	settings.SecretKey = mustGetenv("ROBX_SECRET_KEY")
 	settings.DatabaseURL = getenv("ROBX_DB_URL", "sqlite://./robx.db")
 	settings.AccessTokenExpire = time.Duration(getenvInt("ROBX_ACCESS_TOKEN_EXPIRE_MINUTES", 120)) * time.Minute
