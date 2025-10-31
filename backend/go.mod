@@ -14,3 +14,5 @@ require (
 )
 
 replace github.com/modern-go/concurrent => github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
+
+replace github.com/pelletier/go-toml/v2 => github.com/pelletier/go-toml/v2 v2.0.9
