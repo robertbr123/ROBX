@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     )
     default_mini_indice: str = "WIN=F"
     default_mini_dolar: str = "WDO=F"
+    admin_email: str | None = None
+    admin_password: str | None = None
+    admin_full_name: str = "Administrador ROBX"
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="ROBX_")
 

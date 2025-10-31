@@ -27,6 +27,10 @@ No Windows PowerShell substitua `source .venv/bin/activate` por `.\.venv\Scripts
 | `ROBX_SECRET_KEY` | Chave para geração de tokens JWT | obrigatório |
 | `ROBX_ACCESS_TOKEN_EXPIRE_MINUTES` | Expiração do token em minutos | `60` |
 | `ROBX_DEFAULT_ASSETS` | Lista separada por vírgula de ativos padrão | `PETR4.SA,VALE3.SA,BBDC4.SA` |
+| `ROBX_DEFAULT_MINI_INDICE` | Código do mini índice padrão | `WIN=F` |
+| `ROBX_DEFAULT_MINI_DOLAR` | Código do mini dólar padrão | `WDO=F` |
+| `ROBX_ADMIN_EMAIL` | E-mail do usuário administrador inicial | `admin@robx.local` |
+| `ROBX_ADMIN_PASSWORD` | Senha do usuário administrador inicial | `robx12345` |
 
 ## Testes
 

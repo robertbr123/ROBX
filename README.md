@@ -34,7 +34,7 @@ source .venv/bin/activate
 .\.venv\Scripts\Activate.ps1
 pip install .[all]
 cp .env.example .env
-# Defina ROBX_SECRET_KEY na sua .env
+# Defina ROBX_SECRET_KEY, ROBX_ADMIN_EMAIL e ROBX_ADMIN_PASSWORD na sua .env
 uvicorn app.main:app --reload
 ```
 
@@ -70,4 +70,4 @@ O serviço `frontend` ficará em `http://localhost:5173` e a API em `http://loca
 ## Observações
 
 - O motor de sinal utiliza heurísticas simplificadas e pode ser aprimorado com indicadores adicionais.
-- Configurações de ativos padrão podem ser definidas via `.env` (veja `backend/.env.example`).
+- Configurações de ativos e credenciais padrão (admin) podem ser definidas via `.env` (veja `backend/.env.example`).
