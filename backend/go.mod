@@ -37,3 +37,5 @@ require (
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 )
+
+replace github.com/modern-go/concurrent => github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
