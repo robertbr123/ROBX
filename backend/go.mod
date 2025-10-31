@@ -1,6 +1,6 @@
 module robx-backend
 
-go 1.22
+go 1.19
 
 require (
 	github.com/gin-contrib/cors v1.7.5
@@ -9,6 +9,8 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.22
 	golang.org/x/crypto v0.24.0
+	gorm.io/driver/sqlite v1.5.7
+	gorm.io/gorm v1.25.7
 )
 
 require (
