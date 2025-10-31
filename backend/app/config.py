@@ -1,5 +1,6 @@
 from functools import lru_cache
-from pydantic import Field, field_validator
+
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,8 +9,9 @@ class Settings(BaseSettings):
     secret_key: str
     access_token_expire_minutes: int = 120
     db_url: str = "sqlite:///./robx.db"
-    default_assets: list[str] = Field(
-        default_factory=lambda: ["PETR4.SA", "VALE3.SA", "BBDC4.SA"]
+    default_assets_raw: str = Field(
+        default="PETR4.SA,VALE3.SA,BBDC4.SA",
+        validation_alias=AliasChoices("DEFAULT_ASSETS", "DEFAULT_ASSETS_RAW"),
     )
     default_mini_indice: str = "WIN=F"
     default_mini_dolar: str = "WDO=F"
@@ -17,16 +19,16 @@ class Settings(BaseSettings):
     admin_password: str | None = None
     admin_full_name: str = "Administrador ROBX"
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="ROBX_")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="ROBX_",
+        populate_by_name=True,
+    )
 
-    @field_validator("default_assets", mode="before")
-    @classmethod
-    def parse_assets(cls, value: list[str] | str) -> list[str]:
-        if isinstance(value, list):
-            return value
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        return ["PETR4.SA", "VALE3.SA", "BBDC4.SA"]
+    @property
+    def default_assets(self) -> list[str]:
+        values = [item.strip() for item in self.default_assets_raw.split(",") if item.strip()]
+        return values or ["PETR4.SA", "VALE3.SA", "BBDC4.SA"]
 
 
 @lru_cache
