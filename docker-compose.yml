@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - backend/.env.example
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+    environment:
+      - ROBX_SECRET_KEY=docker-secret-key
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      - VITE_API_URL=http://api:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/public:/app/public

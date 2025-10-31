@@ -46,19 +46,24 @@ class SignalEngine:
         elif latest["rsi"] >= params.rsi_overbought:
             score -= 15
 
-        volume_ma = latest["volume_ma"] or 1
-        volume_ratio = latest["volume"] / volume_ma
+        raw_volume_ma = float(latest["volume_ma"])
+        if not math.isfinite(raw_volume_ma) or raw_volume_ma <= 0:
+            raw_volume_ma = float(latest["volume"])
+        volume_ma = raw_volume_ma if raw_volume_ma > 0 else 1.0
+        volume_ratio = float(latest["volume"]) / volume_ma
         if volume_ratio > 1.2:
             score += 5
         elif volume_ratio < 0.8:
             score -= 5
 
-        volatility = latest["volatility"]
-        if math.isfinite(volatility) and volatility > 0:
-            if volatility < 0.02:
+        volatility_value = float(latest["volatility"])
+        if math.isfinite(volatility_value) and volatility_value > 0:
+            if volatility_value < 0.02:
                 score += 5
-            elif volatility > 0.06:
+            elif volatility_value > 0.06:
                 score -= 5
+        else:
+            volatility_value = 0.0
 
         score = max(0.0, min(100.0, score))
         if score >= 60:
@@ -88,6 +93,6 @@ class SignalEngine:
             "volume": round(float(latest["volume"]), 2),
             "volume_ma": round(float(volume_ma), 2),
             "volume_ratio": round(float(volume_ratio), 2),
-            "volatility": round(float(volatility), 4) if math.isfinite(volatility) else 0.0,
+            "volatility": round(volatility_value, 4),
         }
         return recommendation, confidence, summary, indicators
