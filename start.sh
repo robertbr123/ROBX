@@ -15,7 +15,7 @@ log() {
 
 ensure_go() {
   if ! command_exists go; then
-    log "Go não encontrado. Instale Go 1.22+ e tente novamente."
+    log "Go não encontrado. Instale Go 1.19 e tente novamente."
     exit 1
   fi
 }
