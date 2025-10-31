@@ -2,11 +2,9 @@ import api from "./client";
 import { TokenResponse } from "../types/api";
 
 export async function login(email: string, password: string): Promise<TokenResponse> {
-  const form = new URLSearchParams();
-  form.set("username", email);
-  form.set("password", password);
-  const { data } = await api.post<TokenResponse>("/auth/login", form, {
-    headers: { "Content-Type": "application/x-www-form-urlencoded" }
+  const { data } = await api.post<TokenResponse>("/auth/login", {
+    email,
+    password
   });
   return data;
 }
