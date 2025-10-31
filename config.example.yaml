@@ -1,0 +1,43 @@
+# Exemplo de configuração do ROBX
+# Dicas:
+# - Ações B3 no Yahoo usam sufixo .SA (ex.: PETR4.SA, VALE3.SA)
+# - Futuros WIN/WDO mudam por vencimento (ex.: WINZ25), cobertura no Yahoo pode variar.
+# - HG Brasil usa tickers sem .SA (ex.: PETR4). HG serve cotações, não histórico OHLC.
+
+providers:
+  hg_brasil:
+    api_key: ${HG_API_KEY}
+    base_url: https://api.hgbrasil.com
+
+assets:
+  - symbol: PETR4.SA
+    provider: yahoo
+    timeframe: 1d
+    lookback: 400
+  - symbol: VALE3.SA
+    provider: yahoo
+    timeframe: 1d
+    lookback: 400
+  # Ajuste os tickers de mini-índice/dólar conforme o vencimento
+  - symbol: WINZ25
+    provider: yahoo
+    timeframe: 15m
+    lookback: 600
+  - symbol: WDOZ25
+    provider: yahoo
+    timeframe: 15m
+    lookback: 600
+
+strategies:
+  - name: sma_crossover
+    params:
+      fast: 9
+      slow: 21
+  - name: rsi
+    params:
+      period: 14
+      oversold: 30
+      overbought: 70
+
+scheduler:
+  cron: "*/5 * * * *"  # a cada 5 minutos (reservado para futura execução agendada)
