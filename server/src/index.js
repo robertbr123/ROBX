@@ -2,13 +2,26 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import yahooFinance from 'yahoo-finance2';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Harden process to avoid exit on unhandled errors
+process.on('unhandledRejection', (reason) => {
+  console.error('UnhandledRejection:', reason);
+});
+
+const YH_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+  'Accept': 'application/json, text/plain, */*',
+  'Referer': 'https://finance.yahoo.com/',
+};
+process.on('uncaughtException', (err) => {
+  console.error('UncaughtException:', err);
+});
 
 function normalizeSymbol(symbol) {
   if (!symbol) return 'AAPL';
@@ -26,11 +39,13 @@ app.get('/api/quote', async (req, res) => {
   try {
     const { symbol } = req.query;
     const sym = normalizeSymbol(symbol);
-    const q = await yahooFinance.quote(sym);
-    const price = q?.regularMarketPrice ?? q?.postMarketPrice ?? q?.preMarketPrice;
-    const change = q?.regularMarketChangePercent ?? q?.postMarketChangePercent ?? q?.preMarketChangePercent ?? 0;
+    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(sym)}`;
+  const r = await axios.get(url, { headers: YH_HEADERS });
+    const q = r.data?.quoteResponse?.result?.[0] || {};
+    const price = q.regularMarketPrice ?? q.postMarketPrice ?? q.preMarketPrice;
+    const change = q.regularMarketChangePercent ?? q.postMarketChangePercent ?? q.preMarketChangePercent ?? 0;
     if (!isFinite(price)) return res.status(404).json({ error: 'No price' });
-    res.json({ symbol: sym, price, change });
+    res.json({ symbol: sym, price: Number(price), change: Number(change) });
   } catch (e) {
     console.error('quote error:', e.message);
     res.status(500).json({ error: 'quote_failed' });
@@ -43,9 +58,23 @@ app.get('/api/series', async (req, res) => {
     const sym = normalizeSymbol(symbol);
     const validIntervals = new Set(['1m','2m','5m','15m','30m','60m','90m','1h']);
     const i = validIntervals.has(interval) ? interval : '1m';
-    const params = { interval: i, range };
-    const chart = await yahooFinance.chart(sym, params);
-    const result = chart?.result?.[0];
+    let effectiveRange = range || (i === '15m' ? '5d' : '1d');
+    let url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${encodeURIComponent(i)}&range=${encodeURIComponent(effectiveRange)}`;
+    let r;
+    try{
+      r = await axios.get(url, { headers: YH_HEADERS });
+    } catch (e) {
+      // Retry with broader range when 422 or 400
+      const status = e?.response?.status;
+      if ((status === 422 || status === 400) && effectiveRange !== '5d'){
+        effectiveRange = '5d';
+        url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${encodeURIComponent(i)}&range=${encodeURIComponent(effectiveRange)}`;
+        r = await axios.get(url, { headers: YH_HEADERS });
+      } else {
+        throw e;
+      }
+    }
+    const result = r.data?.chart?.result?.[0];
     if (!result) return res.status(404).json({ error: 'no_result' });
     const closes = result.indicators?.quote?.[0]?.close || [];
     const timestamps = result.timestamp || [];
